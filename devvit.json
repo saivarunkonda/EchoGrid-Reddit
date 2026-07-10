@@ -1,0 +1,32 @@
+{
+  "$schema": "https://developers.reddit.com/schema/config-file.v1.json",
+  "name": "echogrid",
+  "post": {
+    "dir": "dist/client",
+    "entrypoints": {
+      "default": {
+        "inline": true,
+        "entry": "splash.html"
+      },
+      "game": {
+        "entry": "game.html"
+      }
+    }
+  },
+  "server": {
+    "dir": "dist/server",
+    "entry": "index.cjs"
+  },
+  "menu": {
+    "items": [
+      {
+        "label": "Create EchoGrid Post",
+        "location": ["subreddit"],
+        "userContext": ["moderator"],
+        "webView": false,
+        "endpoint": "/menu/create-post"
+      }
+    ]
+  },
+  "permissions": ["redis", "realtime", "reddit-api"]
+}

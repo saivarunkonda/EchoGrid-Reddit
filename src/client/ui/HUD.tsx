@@ -2,6 +2,7 @@ import React from 'react';
 import type { ColorId, LeaderboardEntry } from '../../shared/api';
 import { ECHO_COLORS, RANKS } from '../../shared/api';
 import { hslToHex } from '../utils/gridMath';
+import { ShapeVote } from './ShapeVote';
 
 interface HUDProps {
   username: string;
@@ -20,6 +21,8 @@ interface HUDProps {
   lastMsg: string;
   totalPlacements: number;
   date: string;
+  onVoteShape?: (shapeId: string) => void;
+  shapeVotes?: Record<string, number>;
 }
 
 export function HUD(props: HUDProps) {
@@ -27,9 +30,11 @@ export function HUD(props: HUDProps) {
     username, streak, xp, rank, coverage, resolved, canPlace,
     rateLimitSecs, selectedColor, onColorChange, onToggleLeaderboard,
     leaderboard, showLeaderboard, lastMsg, totalPlacements, date,
+    onVoteShape, shapeVotes,
   } = props;
 
   const coveragePct = Math.round(coverage * 100);
+  const [showShapeVote, setShowShapeVote] = React.useState(false);
 
   return (
     <div className="hud">
@@ -39,9 +44,16 @@ export function HUD(props: HUDProps) {
           <span className="logo-echo">Echo</span><span className="logo-grid">Grid</span>
         </div>
         <div className="hud-date">{date ? `Day ${date}` : ''}</div>
-        <button className="hud-btn" onClick={onToggleLeaderboard} title="Leaderboard">
-          🏆
-        </button>
+        <div className="hud-actions">
+          {onVoteShape && (
+            <button className="hud-btn" onClick={() => setShowShapeVote(s => !s)} title="Vote for tomorrow's shape">
+              🗳️
+            </button>
+          )}
+          <button className="hud-btn" onClick={onToggleLeaderboard} title="Leaderboard">
+            🏆
+          </button>
+        </div>
       </div>
 
       {/* Coverage bar */}
@@ -142,6 +154,17 @@ export function HUD(props: HUDProps) {
               ))}
             </ol>
           )}
+        </div>
+      )}
+
+      {/* Shape vote panel */}
+      {showShapeVote && onVoteShape && (
+        <div className="shape-vote-panel">
+          <div className="shape-vote-header">
+            <span>Vote for Tomorrow's Shape</span>
+            <button className="lb-close" onClick={() => setShowShapeVote(false)}>✕</button>
+          </div>
+          <ShapeVote onVote={onVoteShape} currentVotes={shapeVotes} />
         </div>
       )}
     </div>

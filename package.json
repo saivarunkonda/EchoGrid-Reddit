@@ -5,17 +5,21 @@
   "license": "BSD-3-Clause",
   "type": "module",
   "scripts": {
-    "build": "vite build",
-    "deploy": "npm run type-check && npm run lint && devvit upload",
-    "dev": "devvit playtest",
-    "launch": "npm run deploy && devvit publish",
-    "lint": "eslint 'src/**/*.{ts,tsx}'",
-    "login": "devvit login",
-    "prettier": "prettier --write .",
-    "type-check": "tsc --noEmit"
+    "build": "node esbuild.config.js --client && node esbuild.config.js --server",
+    "build:client": "node esbuild.config.js --client",
+    "build:server": "node esbuild.config.js --server",
+    "clean": "rm -rf dist/ public/*.js*",
+    "format": "npm run lint -- --fix",
+    "lint": "biome check --error-on-warnings",
+    "playtest": "npm run build && devvit playtest",
+    "test": "npm run test:types && npm run lint && npm run test:unit && npm run build",
+    "test:types": "tsc --build",
+    "test:unit": "node --experimental-strip-types --no-warnings=ExperimentalWarning --test src/**/*.test.ts",
+    "publish": "npm run clean && npm run build && devvit publish",
+    "watch": "npm run build"
   },
   "dependencies": {
-    "@devvit/web": "^0.13.7",
+    "@devvit/web": "0.13.7",
     "@hono/node-server": "^1.13.7",
     "hono": "^4.6.12",
     "phaser": "^3.88.2",
@@ -23,13 +27,16 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.2",
+    "@devvit/web": "0.13.7",
+    "@types/node": "22.20.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@typescript-eslint/eslint-plugin": "^8.15.0",
-    "@typescript-eslint/parser": "^8.15.0",
-    "@vitejs/plugin-react": "^4.3.3",
-    "eslint": "^9.15.0",
-    "typescript": "^5.6.3",
-    "vite": "^5.4.11"
+    "devvit": "0.13.7",
+    "esbuild": "0.28.1",
+    "typescript": "6.0.3"
+  },
+  "engines": {
+    "node": ">=22.6"
   }
 }

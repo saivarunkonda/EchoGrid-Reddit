@@ -10,7 +10,6 @@ import type {
 } from '../shared/api';
 import type { ColorId } from '../shared/api';
 import { ECHO_COLORS } from '../shared/api';
-import { connectRealtime } from '@devvit/web/client';
 import './styles.css';
 
 export default function App() {
@@ -28,6 +27,7 @@ export default function App() {
   const [lastMsg, setLastMsg] = useState<string>('');
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [resolved, setResolved] = useState(false);
+  const [shapeVotes, setShapeVotes] = useState<Record<string, number>>({});
 
   // ─────────────────────────────────────────
   // Fetch initial state
@@ -126,17 +126,17 @@ export default function App() {
   }, [init]);
 
   // ─────────────────────────────────────────
-  // Realtime subscription
+  // Realtime subscription (commented out - Devvit API may differ)
   // ─────────────────────────────────────────
-  useEffect(() => {
-    const unsub = connectRealtime('echogrid', (msg: string) => {
-      try {
-        const event: RealtimeEvent = JSON.parse(msg);
-        handleRealtimeEvent(event);
-      } catch {}
-    });
-    return () => unsub();
-  }, []);
+  // useEffect(() => {
+  //   const unsub = connectRealtime('echogrid', (msg: string) => {
+  //     try {
+  //       const event: RealtimeEvent = JSON.parse(msg);
+  //       handleRealtimeEvent(event);
+  //     } catch {}
+  //   });
+  //   return () => unsub();
+  // }, []);
 
   const handleRealtimeEvent = useCallback((event: RealtimeEvent) => {
     if (event.type === 'tile_placed') {
@@ -219,6 +219,26 @@ export default function App() {
   }, []);
 
   // ─────────────────────────────────────────
+  // Shape voting
+  // ─────────────────────────────────────────
+  const handleVoteShape = useCallback(async (shapeId: string) => {
+    try {
+      const res = await fetch('/api/vote-shape', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ shapeId }),
+      });
+      const data = await res.json();
+      if (data.type === 'voted') {
+        setShapeVotes(data.votes);
+        setLastMsg(`Vote for ${shapeId} recorded!`);
+      }
+    } catch (e) {
+      setLastMsg('Error voting. Try again.');
+    }
+  }, []);
+
+  // ─────────────────────────────────────────
   // Render
   // ─────────────────────────────────────────
   if (loading) {
@@ -258,6 +278,8 @@ export default function App() {
         lastMsg={lastMsg}
         totalPlacements={grid?.totalPlacements ?? 0}
         date={grid?.date ?? ''}
+        onVoteShape={handleVoteShape}
+        shapeVotes={shapeVotes}
       />
 
       <div className="canvas-wrapper" ref={canvasContainerRef} />

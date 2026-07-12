@@ -1,14 +1,14 @@
-import type { CellState, ColorId, GridState } from '../../../shared/api';
+import type { CellState, ColorId, GridState } from '../../shared/api';
 import {
   GRID_SIZE,
   ECHO_FADE,
   ECHO_COLORS,
   COVERAGE_WIN_THRESHOLD,
   RATE_LIMIT_SECONDS,
-} from '../../../shared/api';
+} from '../../shared/api';
 import { cellKey, isInBounds, NEIGHBORS_4 } from '../../client/utils/gridMath';
 import { redis, context, reddit } from '@devvit/web/server';
-import { getRank } from '../../../shared/api';
+import { getRank } from '../../shared/api';
 
 // ─────────────────────────────────────────────────
 // Redis key helpers

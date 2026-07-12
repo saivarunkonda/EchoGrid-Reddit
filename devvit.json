@@ -1,11 +1,12 @@
 {
   "$schema": "https://developers.reddit.com/schema/config-file.v1.json",
   "name": "echogrid",
+  "dev": {
+    "subreddit": "echogrid_dev"
+  },
   "post": {
-    "dir": "dist/client",
     "entrypoints": {
       "default": {
-        "inline": true,
         "entry": "splash.html"
       },
       "game": {
@@ -13,20 +14,18 @@
       }
     }
   },
-  "server": {
-    "dir": "dist/server",
-    "entry": "index.cjs"
-  },
+  "server": {},
   "menu": {
     "items": [
       {
-        "label": "Create EchoGrid Post",
-        "location": ["subreddit"],
-        "userContext": ["moderator"],
-        "webView": false,
-        "endpoint": "/menu/create-post"
+        "label": "[EchoGrid] Create Post",
+        "description": "Create a new EchoGrid daily puzzle post.",
+        "location": "subreddit",
+        "endpoint": "/internal/on/menu/create-post"
       }
     ]
   },
-  "permissions": ["redis", "realtime", "reddit-api"]
+  "triggers": {
+    "onAppInstall": "/internal/on/app/install"
+  }
 }
